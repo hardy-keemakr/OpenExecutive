@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: openexecutive
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./docker/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    disk:
+      name: openexec-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: EXEC_EMAIL_ADDRESS
+        value: exec@example.com
+      - key: SCHEDULER_ENABLED
+        value: "false"
+      - key: MCP_ENABLED
+        value: "false"
+      - key: BACKEND_SHARED_SECRET
+        generateValue: true
+      - key: EPISODIC_DB_PATH
+        value: /data/episodic_memory.db
