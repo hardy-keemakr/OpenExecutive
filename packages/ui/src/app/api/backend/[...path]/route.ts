@@ -85,6 +85,12 @@ async function proxy(req: NextRequest, params: { path: string[] }): Promise<Resp
 
   // Pass response through as a stream. Do not buffer.
   const respHeaders = new Headers(upstream.headers);
+  // Node fetch already decompressed the body; forwarding the upstream
+  // content-encoding/length would make clients try to decode plain bytes
+  // as gzip (empty body / "Failed to fetch" behind gzipping hosts).
+  respHeaders.delete("content-encoding");
+  respHeaders.delete("content-length");
+  respHeaders.delete("transfer-encoding");
   // Hint to any downstream proxies (and Next's dev server) not to buffer SSE.
   respHeaders.set("Cache-Control", "no-cache, no-transform");
   respHeaders.set("X-Accel-Buffering", "no");
